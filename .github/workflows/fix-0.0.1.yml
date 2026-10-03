@@ -1,0 +1,37 @@
+name: Fix Coin 0.0.1 source
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - ".github/workflows/fix-0.0.1.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Fix preference accessors
+        run: |
+          FILE="app/src/main/java/com/kkx999/coin/MainActivity.kt"
+          sed -i 's/fun bool(c: Context, key: String, default: Boolean)/fun getBool(c: Context, key: String, default: Boolean)/' "$FILE"
+          sed -i 's/fun bool(c: Context, key: String, value: Boolean)/fun setBool(c: Context, key: String, value: Boolean)/' "$FILE"
+          sed -i 's/Prefs\.bool(context, "dark", true)/Prefs.getBool(context, "dark", true)/g' "$FILE"
+          sed -i 's/Prefs\.bool(context, "haptics", true)/Prefs.getBool(context, "haptics", true)/g' "$FILE"
+          sed -i 's/Prefs\.bool(context, "invert", false)/Prefs.getBool(context, "invert", false)/g' "$FILE"
+          sed -i 's/Prefs\.bool(context, "dark", it)/Prefs.setBool(context, "dark", it)/g' "$FILE"
+          sed -i 's/Prefs\.bool(context, "haptics", it)/Prefs.setBool(context, "haptics", it)/g' "$FILE"
+          sed -i 's/Prefs\.bool(context, "invert", it)/Prefs.setBool(context, "invert", it)/g' "$FILE"
+      - name: Commit fix
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/src/main/java/com/kkx999/coin/MainActivity.kt
+          git commit -m "fix: resolve preference accessor overloads"
+          git push origin main
