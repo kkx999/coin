@@ -101,9 +101,9 @@ private object Prefs {
         .getStringSet("favorites", setOf("BTCUSDT", "ETHUSDT", "SOLUSDT"))?.toSet() ?: emptySet()
     fun favorites(c: Context, value: Set<String>) =
         c.getSharedPreferences(P, 0).edit().putStringSet("favorites", value).apply()
-    fun bool(c: Context, key: String, default: Boolean) =
+    fun getBool(c: Context, key: String, default: Boolean) =
         c.getSharedPreferences(P, 0).getBoolean(key, default)
-    fun bool(c: Context, key: String, value: Boolean) =
+    fun setBool(c: Context, key: String, value: Boolean) =
         c.getSharedPreferences(P, 0).edit().putBoolean(key, value).apply()
 }
 
@@ -115,9 +115,9 @@ private fun CoinApp() {
     var detail by rememberSaveable { mutableStateOf<String?>(null) }
     var connected by remember { mutableStateOf(false) }
     var favorites by remember { mutableStateOf(Prefs.favorites(context)) }
-    var dark by rememberSaveable { mutableStateOf(Prefs.bool(context, "dark", true)) }
-    var haptics by rememberSaveable { mutableStateOf(Prefs.bool(context, "haptics", true)) }
-    var invert by rememberSaveable { mutableStateOf(Prefs.bool(context, "invert", false)) }
+    var dark by rememberSaveable { mutableStateOf(Prefs.getBool(context, "dark", true)) }
+    var haptics by rememberSaveable { mutableStateOf(Prefs.getBool(context, "haptics", true)) }
+    var invert by rememberSaveable { mutableStateOf(Prefs.getBool(context, "invert", false)) }
 
     val quotes = remember {
         mutableStateMapOf<String, LiveQuote>().apply {
@@ -175,9 +175,9 @@ private fun CoinApp() {
                                     onOpen = { detail = it })
                                 Tab.Settings -> SettingsScreen(
                                     connected, dark, haptics, invert,
-                                    onDark = { dark = it; Prefs.bool(context, "dark", it) },
-                                    onHaptics = { haptics = it; Prefs.bool(context, "haptics", it) },
-                                    onInvert = { invert = it; Prefs.bool(context, "invert", it) }
+                                    onDark = { dark = it; Prefs.setBool(context, "dark", it) },
+                                    onHaptics = { haptics = it; Prefs.setBool(context, "haptics", it) },
+                                    onInvert = { invert = it; Prefs.setBool(context, "invert", it) }
                                 )
                             }
                         }
