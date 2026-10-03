@@ -2,7 +2,7 @@ name: Android
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "v0.0.2-dev" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -33,25 +33,25 @@ jobs:
         run: gradle :app:assembleDebug --stacktrace
 
       - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk Coin-0.0.1-debug.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk 币行情-0.0.2-debug.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Coin-0.0.1-debug
-          path: Coin-0.0.1-debug.apk
+          name: 币行情-0.0.2-debug
+          path: 币行情-0.0.2-debug.apk
           if-no-files-found: error
 
-      - name: Publish Coin 0.0.1 release
+      - name: Publish 0.0.2 release
         if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view v0.0.1 >/dev/null 2>&1; then
-            gh release upload v0.0.1 Coin-0.0.1-debug.apk --clobber
+          if gh release view v0.0.2 >/dev/null 2>&1; then
+            gh release upload v0.0.2 币行情-0.0.2-debug.apk --clobber
           else
-            gh release create v0.0.1 Coin-0.0.1-debug.apk \
-              --title "Coin 0.0.1" \
-              --notes "Coin 0.0.1 early preview: live crypto prices, watchlist, chart detail, Liquid Glass-inspired navigation and interaction animations." \
+            gh release create v0.0.2 币行情-0.0.2-debug.apk \
+              --title "币行情 0.0.2" \
+              --notes "全新中文界面、交易所风格 K 线、实时逐笔成交监控、系统返回键修复与交互美化。" \
               --target "$GITHUB_SHA"
           fi
